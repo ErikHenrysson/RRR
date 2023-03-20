@@ -1,0 +1,1 @@
+#Tanken med presenter är att den får färdig information som den kan presentera med förslagsvis matplotlib
