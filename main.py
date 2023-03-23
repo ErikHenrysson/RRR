@@ -1,10 +1,7 @@
 from state import *
 from fsm import *
 from controller import *
-
-#idle_state = state("idle")
-#mobile_state = state("mobile")
-#recon_state = state("recon")
+#for debugging
 
 idle_state = idle()
 mobile_state = mobile()
