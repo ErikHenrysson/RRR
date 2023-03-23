@@ -6,14 +6,12 @@ class MqttClient:
         self.host = host
         self.port = port
         self.topic = topic
-        self.last_message = ""              
-        client = mqtt.Client()
-        client.on_connect = self.on_connect
-        client.on_message = self.on_message
-        client.connect(self.get_host(), self.get_port(), 60)
-
-        client.loop_forever()
-
+        self.last_message = ""
+        self.new_message = False              
+        self.client = mqtt.Client()
+        self.client.on_connect = self.on_connect
+        self.client.on_message = self.on_message
+        self.client.connect(self.get_host(), self.get_port(), 60)
     def get_host(self):
         return self.host
     def get_port(self):
@@ -31,13 +29,29 @@ class MqttClient:
 
     # The callback for when a PUBLISH message is received from the server.
     def on_message(self, client, userdata, msg):
+        self.new_message = True
+        self.last_message = msg
         print(msg.topic+" "+str(msg.payload))
 
-    def start(self):
-        pass
+    def new_available_message(self):
+        return self.new_message
+    
+    def read_message(self):
+        self.new_message = False
+        return self.last_message
+    
+    def my_loop(self):
+        self.client.loop()
 
-mymqttclient = MqttClient("test.mosquitto.org", 1883, "eazense/eazense_38FDFEB810B6/out")
-mymqttclient.start()
+#Test
+#mymqttclient = MqttClient("test.mosquitto.org", 1883, "eazense/eazense_38FDFEB810B6/out")
+#run = True
+#counter = 0
+#while(run):
+#    counter+=1
+#    if (counter%1000 == 0):
+#        print("heartbeat")
+#        mymqttclient.my_loop()
 #TODO change loop forever to something threadable
 # Blocking call that processes network traffic, dispatches callbacks and
 # handles reconnecting.
