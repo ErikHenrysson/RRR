@@ -2,7 +2,7 @@
 #kanske ska kunna publisha mqtt till radarn också för att configurera?
 import paho.mqtt.client as mqtt
 class mqtt_client:
-    def __init__(self, host, port, topic):
+    def __init__(self, host: str, port: int, topic: str):
         self.host = host
         self.port = port
         self.topic = topic

@@ -4,7 +4,7 @@ from mqtt_client import *
 import paho.mqtt.client as mqtt
 
 class presenter:
-    def __init__(self, mqtt_client):
+    def __init__(self, mqtt_client: mqtt_client):
         self.mqtt_client = mqtt_client
 
 

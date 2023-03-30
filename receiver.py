@@ -4,7 +4,7 @@
 from mqtt_client import *
 
 class receiver:
-    def __init__(self, mqtt_client_list):
+    def __init__(self, mqtt_client_list: list):
         self.mqtt_client_list = mqtt_client_list
 
     def check_new_messsages(self):

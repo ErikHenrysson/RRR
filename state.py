@@ -3,7 +3,7 @@
 #Varje state skapar sina egna actions
 #Används i konstruktorn för finite state machinen (fsm.py) för att kontrollera roboten
 class state:
-    def __init__(self, name):
+    def __init__(self, name: str):
         self.active = False
         self.name = name
         pass
