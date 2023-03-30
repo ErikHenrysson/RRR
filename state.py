@@ -33,3 +33,7 @@ class recon(state):
 class mobile(state):
     def __init__(self):
         super().__init__("mobile")
+
+class terminate(state):
+    def __init__(self):
+        super().__init__("terminate")
