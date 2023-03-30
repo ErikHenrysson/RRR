@@ -1,7 +1,7 @@
 #Hämtar json packeten som radarn skickar ut
 #kanske ska kunna publisha mqtt till radarn också för att configurera?
 import paho.mqtt.client as mqtt
-class MqttClient:
+class mqtt_client:
     def __init__(self, host, port, topic):
         self.host = host
         self.port = port
