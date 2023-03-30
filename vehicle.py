@@ -23,7 +23,8 @@ class vehicle(fsm):
         #self.controller = controller(self.fsm, "ps4")
 
     #Run the vehicle with all the functionalities
-    #TODO detta är inte klart, måste kollas över hur run method ska implementeras med ps4 kontroll
+    #TODO detta är inte klart, måste kollas över hur run method ska implementeras med ps4 kontroll.
+    #TODO Matchstatement fungerar bara med python 3.10, byt till något annat eller upgradera pin, tror det är lättast att göra en egen switch
     def run(self):
         current_state = self.get_current_state
         while(current_state != "terminate"):
