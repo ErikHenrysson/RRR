@@ -1,6 +1,7 @@
 #Hämtar json packeten som radarn skickar ut
 #kanske ska kunna publisha mqtt till radarn också för att configurera?
 import paho.mqtt.client as mqtt
+import json
 class mqtt_client:
     def __init__(self, host: str, port: int, topic: str):
         self.host = host
@@ -29,9 +30,12 @@ class mqtt_client:
 
     # The callback for when a PUBLISH message is received from the server.
     def on_message(self, client, userdata, msg):
-        self.new_message = True
-        self.last_message = (msg.topic+" "+str(msg.payload))
-
+        decoded_message=str(msg.payload.decode("utf-8"))
+        if decoded_message != "":
+            json_message=json.loads(decoded_message)
+            self.last_message = json.dumps(json_message, indent=2)
+            self.new_message = True
+        
     def new_available_message(self):
         return self.new_message
     
