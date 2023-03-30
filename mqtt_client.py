@@ -30,8 +30,7 @@ class mqtt_client:
     # The callback for when a PUBLISH message is received from the server.
     def on_message(self, client, userdata, msg):
         self.new_message = True
-        self.last_message = msg
-        print(msg.topic+" "+str(msg.payload))
+        self.last_message = (msg.topic+" "+str(msg.payload))
 
     def new_available_message(self):
         return self.new_message
