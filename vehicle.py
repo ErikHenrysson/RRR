@@ -5,30 +5,37 @@ from mqtt_client import *
 from presenter import *
 
 class vehicle(fsm):
-    def __init__(self):        
-        idle_state = idle()
-        mobile_state = mobile()
-        recon_state = recon()
-        terminate_state = terminate()
-        self.state_list = [idle_state, mobile_state, recon_state, terminate_state]
-
-        self.mqtt_client = mqtt_client("test.mosquitto.org", 1883, "eazense/eazense_38FDFEB810B6/out")
+    def __init__(self, mqtt_host:str, mqtt_port:int, mqtt_topic:str):        
+        #idle_state = idle()
+        #mobile_state = mobile()
+        #recon_state = recon()
+        #terminate_state = terminate()
+        self.state_list = [idle(), mobile(), recon(), terminate()]
+        self.mqtt_client = mqtt_client(mqtt_host, mqtt_port, mqtt_topic)
         self.presenter = presenter(self.mqtt_client)
         
         super().__init__(self.state_list)
-        self.change_state("recon")
-        self.run()
+        #self.change_state("recon")
+        #self.run()
         #self.motor_list = motor_list
         #self.controller = controller
         #self.controller = controller(self.fsm, "ps4")
 
     #Run the vehicle with all the functionalities
     #TODO detta är inte klart, måste kollas över hur run method ska implementeras med ps4 kontroll.
-    #TODO Matchstatement fungerar bara med python 3.10, byt till något annat eller upgradera pin, tror det är lättast att göra en egen switch
     def run(self):
         current_state = self.get_current_state
         while(current_state != "terminate"):
             current_state = self.get_current_state()
+            if current_state == "idle":
+                pass
+            elif current_state == "recon":
+                self.save_data()
+            elif current_state == "mobile":
+                pass
+
+            '''
+            Switch is not supported by python 3.9 
             match current_state:
                 case "idle":
                     pass
@@ -38,3 +45,7 @@ class vehicle(fsm):
                     pass
                 case _:
                     pass
+            '''
+    
+    def save_data(self):
+        self.presenter.save_data()
