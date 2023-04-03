@@ -33,8 +33,7 @@ class presenter:
     #TODO present the target using numpy and matplotlib
     #TODO Maybe create the plot once in the constructor and just clear it before creating it again?
     def draw(self, message) -> str:
-        
-        
+    
         
         return message
 
