@@ -6,7 +6,7 @@ my_presenter = presenter(my_mqtt_client)
 
 run = True
 while (run):
-    message = my_presenter.show()
+    message = my_presenter.save_data()
     #print("printed message in json_test: ", message)
     #json_message = json.loads(message)
     #print(json_message['detectedPersons'])
