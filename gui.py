@@ -4,14 +4,14 @@
 import matplotlib
 matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-from matplotlib.figure import Figure
+import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib import style
 
 import tkinter as tk
 from tkinter import ttk
-
-
+import numpy as np
+from math import sqrt
 LARGE_FONT= ("Verdana", 12)
 style.use("ggplot")
 
@@ -21,24 +21,40 @@ style.use("ggplot")
 
 class my_figure():
     def __init__(self):
-        self.f = Figure(figsize=(5,5), dpi=100)
-        self.a = self.f.add_subplot(111) 
+        #self.f = plt(figsize=(5,5), dpi=100)
+       self.f, self.a = plt.subplots(subplot_kw={'projection': 'polar'})
+       self.a.set_rmax(2)
+       self.a.set_rticks([1, 2, 3, 4,5,6])  # Less radial ticks
+       self.a.set_rlabel_position(0)
+       self.a.grid(True)
+       self.a.set_title("Radar data on polar plot", va='bottom')
+
     def animate(self, i):
-        print("in animate!")
-        pullData = open("radarData.txt","r").read()
+        #print("in animate!")
+        pullData = open("fakedata.txt","r").read()
         dataList = pullData.split('\n')
         xList = []
         yList = []
         zList = []
         velList = []
+        angleList = []
         for eachLine in dataList:
             if len(eachLine) > 1:
                 x, y, z, vel = eachLine.split(',')
+                print("x =",x, "y= ", float(y))
                 xList.append(float(x))
                 yList.append(float(y))
+                zList.append(float(z))
+                velList.append(float(vel))
 
+                angleList.append(float(x)/sqrt(float(x)*float(x)+float(y)*float(y)))
+                
+        dist = np.array(xList)
+        angle = np.array(np.arccos(angleList))
+        
+        print("här är angle efter arcsin:" ,angle)
         self.a.clear()
-        self.a.scatter(xList, yList)
+        self.a.scatter(angle, dist)
         return self.a
     def get_f(self):
         return self.f
