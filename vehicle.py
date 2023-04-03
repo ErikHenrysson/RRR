@@ -5,7 +5,7 @@ from mqtt_client import *
 from presenter import *
 
 class vehicle(fsm):
-    def __init__(self, mqtt_host:str, mqtt_port:int, mqtt_topic:str):        
+    def __init__(self, mqtt_host:str, mqtt_port:int, mqtt_topic:str, gui):        
         #idle_state = idle()
         #mobile_state = mobile()
         #recon_state = recon()
@@ -13,7 +13,7 @@ class vehicle(fsm):
         self.state_list = [idle(), mobile(), recon(), terminate()]
         self.mqtt_client = mqtt_client(mqtt_host, mqtt_port, mqtt_topic)
         self.presenter = presenter(self.mqtt_client)
-        
+        self.gui = gui
         super().__init__(self.state_list)
         #self.change_state("recon")
         #self.run()
@@ -31,6 +31,9 @@ class vehicle(fsm):
                 pass
             elif current_state == "recon":
                 self.save_data()
+                #self.gui.update_idletasks()
+                self.gui.update()   
+                print("heartbeat")
             elif current_state == "mobile":
                 pass
 
