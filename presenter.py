@@ -5,6 +5,9 @@ import paho.mqtt.client as mqtt
 import json
 from my_target import *
 from math import sqrt
+import numpy as np
+import matplotlib.pyplot as plt
+
 class presenter:
     def __init__(self, mqtt_client: mqtt_client):
         self.mqtt_client = mqtt_client
@@ -14,19 +17,25 @@ class presenter:
         self.threshold = 1
 
 
-    def show(self) -> str:
+    def save_data(self) -> str:
         self.mqtt_client.my_loop()
         if self.mqtt_client.new_available_message():
             #if the client has new message, read the new message
             self.message = self.mqtt_client.read_message()
-            return self.draw(self.message)
+            #Extract the targets and remove duplicates
+            self.extract_json(self.message)
+            with open('radarData.txt', 'a') as f:
+                for target in self.targets:
+                    lines = [str(target.get_x()), ',',str(target.get_y()),',', str(target.get_z()),',',str(target.get_vel()),'\n']
+                    f.writelines(lines)
 
     #extract useful information and draw the information with matplotlib?
+    #TODO present the target using numpy and matplotlib
+    #TODO Maybe create the plot once in the constructor and just clear it before creating it again?
     def draw(self, message) -> str:
-        self.extract_json(message)
-        #Draw every target after comparison
-        for target in self.targets:
-            target.print_target()
+        
+        
+        
         return message
 
 
@@ -49,6 +58,7 @@ class presenter:
     def compare_new_target(self, new_target:my_target) -> bool:
         if bool(self.targets):
             for target in self.targets:
+                target.print_target()
                 x1:float = target.get_x()
                 x2:float = new_target.get_x()
                 y1:float = target.get_y()
@@ -61,6 +71,7 @@ class presenter:
                 #    (target.get_y-new_target.get_y)*(target.get_y - new_target.get_y) + \
                 #    (target.get_z-new_target.get_z)*(target.get_z - new_target.get_z))
                 #if its lower than the threshold, the new_target is not considered "a new target" dont put it into the target list
+                #TODO if its lower than the threshold, replace the old target with the new location of the same target
                 print(distance)
                 if distance <= self.threshold:
                     return False
