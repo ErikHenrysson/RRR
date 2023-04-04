@@ -99,4 +99,10 @@ class MyController(Controller):
         servo1.ChangeDutyCycle(6.5)
         
 controller = MyController(interface="/dev/input/js0", connecting_using_ds4drv=False)
+#Något sånt här
+#run = True
+#while run:
+        #controller.read()
+        #print("jag kom förbi")
+#TODO försök byta ut listen() mot något som bara läser när man kallar på funktionen
 controller.listen()
