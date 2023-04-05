@@ -35,11 +35,13 @@ class data_manager:
     def extract_json(self, message) -> list:
         #for testing
         json_message = json.loads(message)
+        created_time = int(json_message['createdTime'])
         detected_targets = json_message['detectedPersons']
         num_targets = detected_targets['noOfPerson']
         if num_targets != 0:
             for target in detected_targets['persons']:
-                target = my_target(float(target['x']),float(target['y']),float(target['z']),float(target['activity']), self.id)
+                target = my_target(x=float(target['x']),y=float(target['y']),z=float(target['z']),vel=float(target['activity']), id=self.id, created_time=created_time)
+                target.print_target()
                 self.id += 1
                 is_new_target = self.compare_new_target(target)
                 if not is_new_target:
@@ -58,9 +60,10 @@ class data_manager:
                 z2:float = new_target.get_z()
                 #pythagoras to get distance between two points in 3d room
                 distance = sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2) + (z1-z2)*(z1-z2))
+                time_diff = new_target.get_created_time - target.get_created_time()
                 print(distance)
-                #if it is the same target, update the old targets information
-                if distance <= self.threshold:
+                #TODO figure out what the threshold should be? Time * velocity + some leaway?
+                if distance <= time_diff*target.get_vel + 1:
                     target.set_x(new_target.get_x)
                     target.set_y(new_target.get_y)
                     target.set_z(new_target.get_z)
@@ -84,7 +87,7 @@ class data_manager:
     '''
     #for each pair of targets, check if they are close enough to each other that they probably are the same target
     #should be able to set a threshhold for this value
-    #TODO decide how to compare the different targets to determine if they are the same or not and figure out if this one is better than the single one
+    # decide how to compare the different targets to determine if they are the same or not and figure out if this one is better than the single one
     def compare_new_targets(self):
         if bool(self.targets) & bool(self.new_targets):
             for target in self.targets:
