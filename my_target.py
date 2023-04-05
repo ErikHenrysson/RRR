@@ -20,3 +20,13 @@ class my_target:
         return self.vel
     def get_id(self) -> int:
         return self.id
+    def set_x(self, x:float):
+        self.x = x
+    def set_x(self, y:float):
+        self.y = y
+    def set_x(self, z:float):
+        self.z = z
+    def set_x(self, vel:float):
+        self.vel = vel
+    def set_x(self, id:float):
+        self.id = id
