@@ -1,6 +1,3 @@
-# The code for changing pages was derived from: http://stackoverflow.com/questions/7546050/switch-between-two-frames-in-tkinter
-# License: http://creativecommons.org/licenses/by-sa/3.0/	
-
 import matplotlib
 matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
@@ -12,12 +9,9 @@ import tkinter as tk
 from tkinter import ttk
 import numpy as np
 from math import sqrt
+
 LARGE_FONT= ("Verdana", 12)
 style.use("ggplot")
-
-
-
-
 
 class my_figure():
     def __init__(self):
@@ -30,8 +24,7 @@ class my_figure():
        self.a.set_title("Radar data on polar plot", va='bottom')
 
     def animate(self, i):
-        #print("in animate!")
-        pullData = open("fakedata.txt","r").read()
+        pullData = open("radarData.txt","r").read()
         dataList = pullData.split('\n')
         xList = []
         yList = []
@@ -46,13 +39,11 @@ class my_figure():
                 yList.append(float(y))
                 zList.append(float(z))
                 velList.append(float(vel))
-
-                angleList.append(float(x)/sqrt(float(x)*float(x)+float(y)*float(y)))
-                
+                angleList.append(float(x)/sqrt(float(x)*float(x)+float(y)*float(y)))   
         dist = np.array(xList)
         angle = np.array(np.arccos(angleList))
         
-        print("här är angle efter arcsin:" ,angle)
+        #print("här är angle efter arcsin:" ,angle)
         self.a.clear()
         self.a.scatter(angle, dist)
         return self.a
@@ -60,7 +51,6 @@ class my_figure():
         return self.f
     
 class SeaofBTCapp(tk.Tk):
-
     def __init__(self, *args, **kwargs):
         self.figure = my_figure()
         tk.Tk.__init__(self, *args, **kwargs)
@@ -87,15 +77,15 @@ class SeaofBTCapp(tk.Tk):
         self.show_frame(StartPage)
 
     def show_frame(self, cont):
-
         frame = self.frames[cont]
         frame.tkraise()
+
     def update(self) -> None:
         self.frames[PageThree].update()
         self.figure.animate(1)
         return super().update()
+    
 class StartPage(tk.Frame):
-
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
         label = tk.Label(self, text="Start Page", font=LARGE_FONT)
@@ -115,7 +105,6 @@ class StartPage(tk.Frame):
 
 
 class PageOne(tk.Frame):
-
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         label = tk.Label(self, text="Page One!!!", font=LARGE_FONT)
