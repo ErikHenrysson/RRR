@@ -34,14 +34,14 @@ class my_figure():
         for eachLine in dataList:
             if len(eachLine) > 1:
                 x, y, z, vel = eachLine.split(',')
-                print("x =",x, "y= ", float(y))
+                #print("x =",x, "y= ", float(y))
                 xList.append(float(x))
                 yList.append(float(y))
                 zList.append(float(z))
                 velList.append(float(vel))
                 angleList.append(float(x)/sqrt(float(x)*float(x)+float(y)*float(y)))   
         dist = np.array(xList)
-        angle = np.array(np.arccos(angleList))
+        angle = np.array(np.arccos(angleList)-np.deg2rad(45))
         
         #print("här är angle efter arcsin:" ,angle)
         self.a.clear()
@@ -81,10 +81,11 @@ class SeaofBTCapp(tk.Tk):
         frame.tkraise()
 
     def update(self) -> None:
-        self.frames[PageThree].update()
+        self.frames[StartPage].update()
         self.figure.animate(1)
         return super().update()
     
+'''    
 class StartPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
@@ -102,11 +103,35 @@ class StartPage(tk.Frame):
         button3 = ttk.Button(self, text="Graph Page",
                             command=lambda: controller.show_frame(PageThree))
         button3.pack()
+'''
 
+    
+class StartPage(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        label = tk.Label(self, text="Graph Page!", font=LARGE_FONT)
+        label.pack(pady=10,padx=10)
+
+        button1 = ttk.Button(self, text="Terminate",
+                            command=lambda: controller.show_frame(StartPage))
+        button1.pack()
+
+        self.canvas = FigureCanvasTkAgg(controller.figure.get_f(), self)
+        self.canvas.draw()
+        self.canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
+
+        toolbar = NavigationToolbar2Tk(self.canvas, self)
+        toolbar.update()
+        self.canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+
+    def update(self):
+        self.canvas.draw()
+        
 
 class PageOne(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
+        '''
         label = tk.Label(self, text="Page One!!!", font=LARGE_FONT)
         label.pack(pady=10,padx=10)
 
@@ -117,12 +142,13 @@ class PageOne(tk.Frame):
         button2 = ttk.Button(self, text="Page Two",
                             command=lambda: controller.show_frame(PageTwo))
         button2.pack()
-
+        '''
 
 class PageTwo(tk.Frame):
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
+        '''
         label = tk.Label(self, text="Page Two!!!", font=LARGE_FONT)
         label.pack(pady=10,padx=10)
 
@@ -133,12 +159,14 @@ class PageTwo(tk.Frame):
         button2 = ttk.Button(self, text="Page One",
                             command=lambda: controller.show_frame(PageOne))
         button2.pack()
-
+         ''' 
 
 class PageThree(tk.Frame):
 
     def __init__(self, parent, controller):
+        
         tk.Frame.__init__(self, parent)
+        '''
         label = tk.Label(self, text="Graph Page!", font=LARGE_FONT)
         label.pack(pady=10,padx=10)
 
@@ -156,3 +184,4 @@ class PageThree(tk.Frame):
 
     def update(self):
         self.canvas.draw()
+        '''
