@@ -60,14 +60,14 @@ class data_manager:
                 z2:float = new_target.get_z()
                 #pythagoras to get distance between two points in 3d room
                 distance = sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2) + (z1-z2)*(z1-z2))
-                time_diff = new_target.get_created_time - target.get_created_time()
+                time_diff = new_target.get_created_time() - target.get_created_time()
                 print(distance)
                 #TODO figure out what the threshold should be? Time * velocity + some leaway?
-                if distance <= time_diff*target.get_vel + 1:
-                    target.set_x(new_target.get_x)
-                    target.set_y(new_target.get_y)
-                    target.set_z(new_target.get_z)
-                    target.set_vel(new_target.get_vel)
+                if distance <= time_diff*target.get_vel() + 1:
+                    #target.set_x(new_target.get_x())
+                    #target.set_y(new_target.get_y())
+                    #target.set_z(new_target.get_z())
+                    #target.set_vel(new_target.get_vel())
                     
                     return False
                 else:

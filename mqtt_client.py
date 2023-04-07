@@ -46,17 +46,3 @@ class mqtt_client:
     def my_loop(self):
         self.client.loop()
 
-#Test
-#mymqttclient = MqttClient("test.mosquitto.org", 1883, "eazense/eazense_38FDFEB810B6/out")
-#run = True
-#counter = 0
-#while(run):
-#    counter+=1
-#    if (counter%1000 == 0):
-#        print("heartbeat")
-#        mymqttclient.my_loop()
-#TODO change loop forever to something threadable
-# Blocking call that processes network traffic, dispatches callbacks and
-# handles reconnecting.
-# Other loop*() functions are available that give a threaded interface and a
-# manual interface.

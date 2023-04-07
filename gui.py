@@ -11,7 +11,7 @@ import numpy as np
 from math import pi, acos, asin, sqrt
 LARGE_FONT= ("Verdana", 12)
 style.use("ggplot")
-
+#TODO städa upp här
 class my_figure():
     def __init__(self):
         #self.f = plt(figsize=(5,5), dpi=100)
@@ -23,7 +23,7 @@ class my_figure():
        self.a.set_title("Radar data on polar plot", va='bottom')
 
     def animate(self, i):
-        pullData = open("fakedata.txt","r").read()
+        pullData = open("radarData.txt","r").read()
         dataList = pullData.split('\n')
         xList = []
         yList = []
@@ -64,7 +64,7 @@ class my_figure():
 
 
         dist = np.array(distList)
-        angle = np.array(angleList)
+        angle = np.array(angleList-np.deg2rad(45))
         self.a.clear()
         self.a.scatter(angle, dist)
         #Sets the height of the target besides teh point
