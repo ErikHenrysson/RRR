@@ -8,8 +8,7 @@ from matplotlib import style
 import tkinter as tk
 from tkinter import ttk
 import numpy as np
-from math import sqrt
-
+from math import pi, acos, asin, sqrt
 LARGE_FONT= ("Verdana", 12)
 style.use("ggplot")
 
@@ -24,28 +23,54 @@ class my_figure():
        self.a.set_title("Radar data on polar plot", va='bottom')
 
     def animate(self, i):
-        pullData = open("radarData.txt","r").read()
+        pullData = open("fakedata.txt","r").read()
         dataList = pullData.split('\n')
         xList = []
         yList = []
         zList = []
         velList = []
         angleList = []
+        distList = []
         for eachLine in dataList:
             if len(eachLine) > 1:
                 x, y, z, vel = eachLine.split(',')
-                #print("x =",x, "y= ", float(y))
                 xList.append(float(x))
                 yList.append(float(y))
                 zList.append(float(z))
                 velList.append(float(vel))
-                angleList.append(float(x)/sqrt(float(x)*float(x)+float(y)*float(y)))   
-        dist = np.array(xList)
-        angle = np.array(np.arccos(angleList)-np.deg2rad(45))
-        
-        #print("här är angle efter arcsin:" ,angle)
+                if float(x) == 0:
+                    dist = abs(float(y))
+                    if float(y) >= 0:
+                        angleList.append(pi/2)
+                    elif float(y) < 0:
+                        angleList.append(-pi/2)
+                elif float(y) == 0:
+                    dist = abs(float(x))
+                    if float(x) >= 0:
+                        angleList.append(0)
+                    elif float(x) < 0:
+                        angleList.append(pi)
+                else:
+                    #y and x are not 0'
+                    dist = sqrt(float(x)*float(x)+float(y)*float(y))
+                    if float(y) < 0 and float(x) < 0:
+                        angleList.append(acos(float(x)/dist)+pi/2)  
+                    elif (float(y) < 0 and float(x) >= 0):
+                        angleList.append(acos(float(x)/dist)-pi/2)  
+                    else:
+                        angleList.append(acos(float(x)/dist))  
+
+                distList.append(dist)
+
+
+        dist = np.array(distList)
+        angle = np.array(angleList)
         self.a.clear()
         self.a.scatter(angle, dist)
+        #Sets the height of the target besides teh point
+        for a in range(len(zList)):
+            self.a.annotate(zList[a], (angle[a], dist[a]))
+        
         return self.a
     def get_f(self):
         return self.f
@@ -54,13 +79,12 @@ class SeaofBTCapp(tk.Tk):
     def __init__(self, *args, **kwargs):
         self.figure = my_figure()
         tk.Tk.__init__(self, *args, **kwargs)
-
         tk.Tk.iconbitmap(self)
         tk.Tk.wm_title(self, "Sea of BTC client")
-        
-        
+       # tk.Tk.wm_attributes("-fullscreen",True)
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand = True)
+        
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
