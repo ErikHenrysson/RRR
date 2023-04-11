@@ -3,6 +3,8 @@ import RPi.GPIO as GPIO
 from time import sleep
 from pyPS4Controller.controller import Controller
 from multiprocessing import Process
+from fsm import *
+from state import *
 
 GPIO.setmode(GPIO.BOARD)
 
@@ -32,59 +34,100 @@ PWMB = GPIO.PWM(enb, 100)
 PWMB.start(0)
 
 class MyController(Controller):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, fsm:fsm, *args, **kwargs):
         Controller.__init__(self, *args, **kwargs)
+        self.fsm = fsm
         GPIO.setup(OUT_PIN, GPIO.OUT)
         self.servo1 = GPIO.PWM(OUT_PIN, PULSE_FREQ)
         self.servo1.start(0)
+        
+    def on_circle_press(self):
+        current_state = self.fsm.get_current_state()
+        
+        if current_state == "mobile":
+            self.fsm.change_state("idle")
+    
+
+        elif current_state == "idle":
+            self.fsm.change_state("recon")
+        
+            
+    
+    def on_square_press(self):
+        current_state = self.fsm.get_current_state()
+
+        if current_state == "recon":
+            self.fsm.change_state("idle")
+
+        elif current_state == "idle":
+            self.fsm.change_state("mobile")
+
 
     def on_R2_press(self, value):
-        print("forward")
-        GPIO.output(in1a, GPIO.HIGH)
-        GPIO.output(in2a, GPIO.LOW)
-        GPIO.output(in1b, GPIO.HIGH)
-        GPIO.output(in2b, GPIO.LOW)
+        current_state = self.fsm.get_current_state()
+        if current_state == "mobile":
+            print("forward")
+            GPIO.output(in1a, GPIO.HIGH)
+            GPIO.output(in2a, GPIO.LOW)
+            GPIO.output(in1b, GPIO.HIGH)
+            GPIO.output(in2b, GPIO.LOW)
 
     def on_R2_release(self):
-        GPIO.output(in1a, GPIO.LOW)
-        GPIO.output(in2a, GPIO.LOW)
-        GPIO.output(in1b, GPIO.LOW)
-        GPIO.output(in2b, GPIO.LOW)
+        current_state = self.fsm.get_current_state()
+        if current_state == "mobile":
+            GPIO.output(in1a, GPIO.LOW)
+            GPIO.output(in2a, GPIO.LOW)
+            GPIO.output(in1b, GPIO.LOW)
+            GPIO.output(in2b, GPIO.LOW)
 
     def on_L2_press(self, value):
-        print("backward")
-        GPIO.output(in1a, GPIO.LOW)
-        GPIO.output(in2a, GPIO.HIGH)
-        GPIO.output(in1b, GPIO.LOW)
-        GPIO.output(in2b, GPIO.HIGH)
+        current_state = self.fsm.get_current_state()
+        if current_state == "mobile":
+            print("backward")
+            GPIO.output(in1a, GPIO.LOW)
+            GPIO.output(in2a, GPIO.HIGH)
+            GPIO.output(in1b, GPIO.LOW)
+            GPIO.output(in2b, GPIO.HIGH)
 
     def on_L2_release(self):
-        GPIO.output(in1a, GPIO.LOW)
-        GPIO.output(in2a, GPIO.LOW)
-        GPIO.output(in1b, GPIO.LOW)
-        GPIO.output(in2b, GPIO.LOW)
+        current_state = self.fsm.get_current_state()
+        if current_state == "mobile":
+            GPIO.output(in1a, GPIO.LOW)
+            GPIO.output(in2a, GPIO.LOW)
+            GPIO.output(in1b, GPIO.LOW)
+            GPIO.output(in2b, GPIO.LOW)
 
     def on_L3_left(self, value):
-        self.servo1.ChangeDutyCycle(2)
+        current_state = self.fsm.get_current_state()
+        if current_state == "mobile":
+            self.servo1.ChangeDutyCycle(2)
 
     def on_L3_right(self, value):
-        self.servo1.ChangeDutyCycle(10)
+        current_state = self.fsm.get_current_state()
+        if current_state == "mobile":
+            self.servo1.ChangeDutyCycle(10)
 
     def on_L3_x_at_rest(self):
-        self.servo1.ChangeDutyCycle(6.5)
+        current_state = self.fsm.get_current_state()
+        if current_state == "mobile":
+            self.servo1.ChangeDutyCycle(6.5)
 
-    def on_R3_left(self, value):
-        self.servo1.ChangeDutyCycle(2)
+    #def on_R3_left(self, value):
+    #    self.servo1.ChangeDutyCycle(2)
 
-    def on_R3_right(self, value):
-        self.servo1.ChangeDutyCycle(10)
+   # def on_R3_right(self, value):
+   #     self.servo1.ChangeDutyCycle(10)
 
-    def on_R3_x_at_rest(self):
-        self.servo1.ChangeDutyCycle(6.5)
+   # def on_R3_x_at_rest(self):
+   #     self.servo1.ChangeDutyCycle(6.5)
+        
+        
+    
 
-def run_controller():
+
+def run_controller(fsm:fsm):
     print("Det är luungt123")
-    controller = MyController(interface="/dev/input/js0", connecting_using_ds4drv=False)
+    controller = MyController(fsm, interface="/dev/input/js0", connecting_using_ds4drv=False)
     print("Det är luungt")
     controller.listen()
     print("Det är luungt")
@@ -92,10 +135,12 @@ def run_controller():
 def run_servo():
     while True:
         pass  # Add your servo code here
-        print("Det är luungt2")
 
 if __name__ == '__main__':
-    p1 = Process(target=run_controller)
+    my_fsm = fsm([idle(), recon(), mobile()])
+    p1 = Process(target=run_controller(my_fsm))
     p1.start()
-    print("Det är luungt3")
-    
+    run = True
+    while run:
+        pass
+        #print("lungan")
