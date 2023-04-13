@@ -23,13 +23,14 @@ class my_target:
         return self.id
     def get_created_time(self):
         return self.created_time
+    
     def set_x(self, x:float):
         self.x = x
-    def set_x(self, y:float):
+    def set_y(self, y:float):
         self.y = y
-    def set_x(self, z:float):
+    def set_z(self, z:float):
         self.z = z
-    def set_x(self, vel:float):
+    def set_vel(self, vel:float):
         self.vel = vel
-    def set_x(self, id:float):
+    def set_id(self, id:float):
         self.id = id

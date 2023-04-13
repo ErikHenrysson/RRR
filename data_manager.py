@@ -64,11 +64,10 @@ class data_manager:
                 print(distance)
                 #TODO figure out what the threshold should be? Time * velocity + some leaway?
                 if distance <= time_diff*target.get_vel() + 1:
-                    #target.set_x(new_target.get_x())
-                    #target.set_y(new_target.get_y())
-                    #target.set_z(new_target.get_z())
-                    #target.set_vel(new_target.get_vel())
-                    
+                    target.set_x(new_target.get_x())
+                    target.set_y(new_target.get_y())
+                    target.set_z(new_target.get_z())
+                    target.set_vel(new_target.get_vel())
                     return False
                 else:
                     #if it is a new target, return true and add it to the new target list 
