@@ -4,10 +4,10 @@ from mqtt_client import *
 import paho.mqtt.client as mqtt
 import json
 from my_target import *
-from math import sqrt
+from math import sqrt, pi, acos
 import numpy as np
 import matplotlib.pyplot as plt
-
+from public_func import *
 class data_manager:
     def __init__(self, mqtt_client: mqtt_client):
         self.mqtt_client = mqtt_client
@@ -27,7 +27,18 @@ class data_manager:
             self.extract_json(self.message)
             with open('radarData.txt', 'w') as f:
                 for target in self.targets:
-                    lines = [str(target.get_x()), ',',str(target.get_y()),',', str(target.get_z()),',',str(target.get_vel()),'\n']
+                    lines = [str(target.get_x()),
+                            ',',
+                            str(target.get_y()),
+                            ',',
+                            str(target.get_z()),
+                            ',',
+                            str(target.get_vel()),
+                            ',',
+                            str(target.get_old_angle()),
+                            ',',
+                            str(target.get_old_r()),
+                            '\n']
                     f.writelines(lines)
 
     #Extracts the desired parameters from the mqtt json message
@@ -61,9 +72,12 @@ class data_manager:
                 #pythagoras to get distance between two points in 3d room
                 distance = sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2) + (z1-z2)*(z1-z2))
                 time_diff = new_target.get_created_time() - target.get_created_time()
-                print(distance)
+                print("distance in compare_new_target:", distance)
                 #TODO figure out what the threshold should be? Time * velocity + some leaway?
                 if distance <= time_diff*target.get_vel() + 1:
+                    angle, dist = extract_angle_and_dist(x1,y1)
+                    target.set_old_angle(angle)
+                    target.set_old_r(dist)
                     target.set_x(new_target.get_x())
                     target.set_y(new_target.get_y())
                     target.set_z(new_target.get_z())

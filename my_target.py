@@ -6,6 +6,8 @@ class my_target:
         self.vel = vel
         self.id = id
         self.created_time = created_time
+        self.old_angle = 0
+        self.old_r = 0
         #self.print_target()
 
     def print_target(self):
@@ -34,3 +36,13 @@ class my_target:
         self.vel = vel
     def set_id(self, id:float):
         self.id = id
+
+    def set_old_angle(self, angle:float):
+        self.old_angle = angle
+    def get_old_angle(self):
+        return self.old_angle
+    
+    def set_old_r(self, r:float):
+        self.old_r = r
+    def get_old_r(self):
+        return self.old_r

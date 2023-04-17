@@ -4,7 +4,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib import style
-
+from public_func import *
 import tkinter as tk
 from tkinter import ttk
 import numpy as np
@@ -21,9 +21,10 @@ class my_figure():
        self.a.set_rlabel_position(0)
        self.a.grid(True)
        self.a.set_title("Radar data on polar plot", va='bottom')
-
+    #TODO På något sätt måste de gamla målets vinkel och radie sparas för att 
+    # rita pilarna som representerar hastigheten
     def animate(self, i):
-        pullData = open("radarData.txt","r").read()
+        pullData = open("fakedata.txt","r").read()
         dataList = pullData.split('\n')
         xList = []
         yList = []
@@ -31,43 +32,41 @@ class my_figure():
         velList = []
         angleList = []
         distList = []
+        old_angle_list = []
+        old_r_list = []
         for eachLine in dataList:
             if len(eachLine) > 1:
-                x, y, z, vel = eachLine.split(',')
+                x, y, z, vel, old_angle, old_r = eachLine.split(',')
+                #print("Old angle: ", old_angle, "old radius:", old_r)
                 xList.append(float(x))
                 yList.append(float(y))
                 zList.append(float(z))
                 velList.append(float(vel))
-                if float(x) == 0:
-                    dist = abs(float(y))
-                    if float(y) >= 0:
-                        angleList.append(pi/2)
-                    elif float(y) < 0:
-                        angleList.append(-pi/2)
-                elif float(y) == 0:
-                    dist = abs(float(x))
-                    if float(x) >= 0:
-                        angleList.append(0)
-                    elif float(x) < 0:
-                        angleList.append(pi)
-                else:
-                    #y and x are not 0'
-                    dist = sqrt(float(x)*float(x)+float(y)*float(y))
-                    if float(y) < 0 and float(x) < 0:
-                        angleList.append(acos(float(x)/dist)+pi/2)  
-                    elif (float(y) < 0 and float(x) >= 0):
-                        angleList.append(acos(float(x)/dist)-pi/2)  
-                    else:
-                        angleList.append(acos(float(x)/dist))  
-
+                old_angle_list.append(old_angle)
+                old_r_list.append(old_r)
+                angle, dist = extract_angle_and_dist(float(x), float(y))
+                angleList.append(angle-np.deg2rad(45))
                 distList.append(dist)
-
+                
+        #TODO varför ligger de ett steg bakom? hitta 
 
         dist = np.array(distList)
-        angle = np.array(angleList-np.deg2rad(45))
+        angle = np.array(angleList)
         self.a.clear()
         self.a.scatter(angle, dist)
-        #Sets the height of the target besides teh point
+        #xy = (old target angle, old target radius)
+        #xytext = (new target angle, new target radius)
+        for a in range(len(old_angle_list)):
+            if float(old_angle_list[a]) != 0 and float(old_r_list[a]) != 0:
+                print("inne i ifsatsen!!", a)
+                self.a.annotate("",
+                    xytext=(float(old_angle_list[a]), float(old_r_list[a])),
+                    xy=(float(angleList[a]), float(distList[a])),
+                    xycoords='data',
+                    arrowprops=dict(facecolor='red', shrink=0.05),
+                    )
+        
+         #Sets the height of the target besides teh point
         for a in range(len(zList)):
             self.a.annotate(zList[a], (angle[a], dist[a]))
         
@@ -75,12 +74,12 @@ class my_figure():
     def get_f(self):
         return self.f
     
-class SeaofBTCapp(tk.Tk):
+class gui(tk.Tk):
     def __init__(self, *args, **kwargs):
         self.figure = my_figure()
         tk.Tk.__init__(self, *args, **kwargs)
         tk.Tk.iconbitmap(self)
-        tk.Tk.wm_title(self, "Sea of BTC client")
+        tk.Tk.wm_title(self, "Radar Reconnaissance Robot")
        # tk.Tk.wm_attributes("-fullscreen",True)
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand = True)
@@ -90,8 +89,7 @@ class SeaofBTCapp(tk.Tk):
 
         self.frames = {}
 
-        for F in (StartPage, PageOne, PageTwo, PageThree):
-
+        for F in (StartPage, PageOne):
             frame = F(container, self)
 
             self.frames[F] = frame
@@ -108,27 +106,6 @@ class SeaofBTCapp(tk.Tk):
         self.frames[StartPage].update()
         self.figure.animate(1)
         return super().update()
-    
-'''    
-class StartPage(tk.Frame):
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self,parent)
-        label = tk.Label(self, text="Start Page", font=LARGE_FONT)
-        label.pack(pady=10,padx=10)
-
-        button = ttk.Button(self, text="Visit Page 1",
-                            command=lambda: controller.show_frame(PageOne))
-        button.pack()
-
-        button2 = ttk.Button(self, text="Visit Page 2",
-                            command=lambda: controller.show_frame(PageTwo))
-        button2.pack()
-
-        button3 = ttk.Button(self, text="Graph Page",
-                            command=lambda: controller.show_frame(PageThree))
-        button3.pack()
-'''
-
     
 class StartPage(tk.Frame):
     def __init__(self, parent, controller):
