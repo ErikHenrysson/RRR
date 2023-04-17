@@ -42,8 +42,8 @@ class my_figure():
                 yList.append(float(y))
                 zList.append(float(z))
                 velList.append(float(vel))
-                old_angle_list.append(old_angle)
-                old_r_list.append(old_r)
+                old_angle_list.append(float(old_angle)-np.deg2rad(45))
+                old_r_list.append(float(old_r))
                 angle, dist = extract_angle_and_dist(float(x), float(y))
                 angleList.append(angle-np.deg2rad(45))
                 distList.append(dist)
@@ -56,12 +56,15 @@ class my_figure():
         self.a.scatter(angle, dist)
         #xy = (old target angle, old target radius)
         #xytext = (new target angle, new target radius)
+        #print(old_angle_list)
+        #print(old_r_list)
+        #print(angleList)
+        #print(distList)
         for a in range(len(old_angle_list)):
             if float(old_angle_list[a]) != 0 and float(old_r_list[a]) != 0:
-                print("inne i ifsatsen!!", a)
                 self.a.annotate("",
-                    xytext=(float(old_angle_list[a]), float(old_r_list[a])),
-                    xy=(float(angleList[a]), float(distList[a])),
+                    xytext=(old_angle_list[a], old_r_list[a]),
+                    xy=(angleList[a],distList[a]),
                     xycoords='data',
                     arrowprops=dict(facecolor='red', shrink=0.05),
                     )
