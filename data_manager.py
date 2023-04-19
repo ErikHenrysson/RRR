@@ -15,7 +15,7 @@ class data_manager:
         self.new_targets:list[my_target] = []
         self.id:int = 0
         self.threshold = 1
-
+        self.multiple = False
 
     def save_data(self) -> str:
         self.mqtt_client.my_loop()
@@ -24,23 +24,40 @@ class data_manager:
             self.message = self.mqtt_client.read_message()
             #print(self.message)
             #Extract the targets and remove duplicates
-            self.extract_json(self.message)
-            with open('radarData.txt', 'w') as f:
-                for target in self.targets:
-                    lines = [str(target.get_x()),
-                            ',',
-                            str(target.get_y()),
-                            ',',
-                            str(target.get_z()),
-                            ',',
-                            str(target.get_vel()),
-                            ',',
-                            str(target.get_old_angle()),
-                            ',',
-                            str(target.get_old_r()),
-                            '\n']
-                    f.writelines(lines)
-
+            if self.multiple:
+                self.extract_json(self.message)
+                with open('radarData.txt', 'w') as f:
+                    for target in self.targets:
+                        lines = [str(target.get_x()),
+                                ',',
+                                str(target.get_y()),
+                                ',',
+                                str(target.get_z()),
+                                ',',
+                                str(target.get_vel()),
+                                ',',
+                                str(target.get_old_angle()),
+                                ',',
+                                str(target.get_old_r()),
+                                '\n']
+                        f.writelines(lines)
+            else:
+                self.extract_single_json(self.message)
+                with open('radarData.txt', 'w') as f:
+                    for target in self.targets:
+                        lines = [str(target.get_x()),
+                                ',',
+                                str(target.get_y()),
+                                ',',
+                                str(target.get_z()),
+                                ',',
+                                str(target.get_vel()),
+                                ',',
+                                str(target.get_old_angle()),
+                                ',',
+                                str(target.get_old_r()),
+                                '\n']
+                        f.writelines(lines)
     #Extracts the desired parameters from the mqtt json message
     #Creates new targets that can be comprade with old ones to see if they are new or not
     def extract_json(self, message) -> list:
@@ -91,6 +108,35 @@ class data_manager:
             #if the list of targets is empty, we know its a new target so add it to the list and return true
             self.targets.append(new_target)
             return True
+
+
+
+
+    def extract_single_json(self, message) -> list:
+        #for testing
+        json_message = json.loads(message)
+        created_time = int(json_message['createdTime'])
+        detected_targets = json_message['detectedPersons']
+        num_targets = detected_targets['noOfPerson']
+        if num_targets != 0:
+            for target in detected_targets['persons']:
+                target = my_target(x=float(target['x']),y=float(target['y']),z=float(target['z']),vel=float(target['activity']), id=self.id, created_time=created_time)
+                target.print_target()
+                self.id += 1
+                is_new_target = self.compare_single(target)
+                if not is_new_target:
+                    self.id -=1
+                return
+
+                
+    def compare_single(self, new_target:my_target) -> bool:
+        if (self.targets):
+            old_target = self.targets[0]
+            old_angle, old_r = extract_angle_and_dist(old_target.get_x(), old_target.get_y())
+            new_target.set_old_angle(old_angle)
+            new_target.set_old_r(old_r)
+        self.targets.clear()
+        self.targets.append(new_target)
 
     #should be called regurarely
     def loop_mqtt(self):

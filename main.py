@@ -8,8 +8,11 @@ from gui import *
 #for debugging
 
 
-gui = SeaofBTCapp()
-my_vehicle = vehicle("test.mosquitto.org", 1883, "eazense/eazense_38FDFEB810B6/out", gui)
+my_gui = gui()
+#run = True
+#while run:
+#    gui.update()
+my_vehicle = vehicle("192.168.4.1", 1883, "eazense/eazense_38FDFEB810B6/out",my_gui)
 my_vehicle.change_state("mobile")
 my_vehicle.change_state("recon")
 my_vehicle.run()
