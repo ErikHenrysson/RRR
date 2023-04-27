@@ -9,7 +9,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 from public_func import *
 class data_manager:
+    '''
+    The data manager fetches data from the MQTT client. When it receives new data, it extracts the relevant information
+    about the targets and keeps track of them in a list. 
+
+    The data manager has two modes, multi or single target detection.
+    '''
     def __init__(self, mqtt_client: mqtt_client):
+        '''
+        Constructs a new 'data_manager' object.
+        
+        :param mqtt_client: Specified mqtt client to extract data from
+        :return: Returns nothing
+        '''
         self.mqtt_client = mqtt_client
         self.targets:list[my_target] = []
         self.new_targets:list[my_target] = []
@@ -17,7 +29,14 @@ class data_manager:
         self.threshold = 1
         self.multiple = False
 
+    #TODO behöver den returnera en string? kanske ta bort
     def save_data(self) -> str:
+        '''
+        Checks if there is a new data package from the mqtt client. If there is, it extracts the targets from the package.
+        If multi target detection is enabled, it compares old and new targets and keeps track of them.
+
+        :return: returns nothing??
+        '''
         self.mqtt_client.my_loop()
         if self.mqtt_client.new_available_message():
             #if the client has new message, read the new message
@@ -58,10 +77,19 @@ class data_manager:
                                 str(target.get_old_r()),
                                 '\n']
                         f.writelines(lines)
+
     #Extracts the desired parameters from the mqtt json message
     #Creates new targets that can be comprade with old ones to see if they are new or not
+    #TODO behöver den returnera en lista??
     def extract_json(self, message) -> list:
-        #for testing
+        '''
+        Extracts the useful information from the JSON package from the mqtt client. 
+        When the information is extracted and saved, it is compared to the list of saved targets.
+        Can extract and compare multiple targets.
+
+        :param message: The JSON message to be analyzed
+        :return: Returns nothing ??
+        '''
         json_message = json.loads(message)
         created_time = int(json_message['createdTime'])
         detected_targets = json_message['detectedPersons']
@@ -75,8 +103,14 @@ class data_manager:
                 if not is_new_target:
                     self.id -=1
     
-    # Maybe its better to compare a single target each time it is created, easier to keep track of target ids that way.
     def compare_new_target(self, new_target:my_target) -> bool:
+        '''
+        Compares a new target to the list of current ones. If the distance from the new targets is within the desired range 
+        of the old ones (the old targets velocity is taken into account) it is considered an old target which have moved.
+
+        :param new_target: The new target which should be compared to the current targets.
+        :return: Returns True if new_target is considered a new target. Returns False if new_target is considered a previously recorded one.
+        '''
         if bool(self.targets):
             for target in self.targets:
                 target.print_target()
@@ -111,9 +145,15 @@ class data_manager:
 
 
 
-
+    #TODO If there is multiple targets in the package, save the one that is closest to the saved one. Does it need a return??
     def extract_single_json(self, message) -> list:
-        #for testing
+        '''
+        Extracts the useful information from the JSON package from the mqtt client. Updates the saved targets location.
+        Used when single target detection is enabled. The target closest to the 
+
+        :param message: The JSON message to be analyzed.
+        :return: Returns nothing ????
+        '''
         json_message = json.loads(message)
         created_time = int(json_message['createdTime'])
         detected_targets = json_message['detectedPersons']
@@ -129,7 +169,13 @@ class data_manager:
                 return
 
                 
-    def compare_single(self, new_target:my_target) -> bool:
+    def compare_single(self, new_target:my_target):
+        '''
+        Updates the saved target with the new one. Adds the old coordinates for representation in the gui class.
+
+        :param new_target: The new target which should replace the old one
+        :return: Returns nothing.
+        '''
         if (self.targets):
             old_target = self.targets[0]
             old_angle, old_r = extract_angle_and_dist(old_target.get_x(), old_target.get_y())
@@ -138,48 +184,8 @@ class data_manager:
         self.targets.clear()
         self.targets.append(new_target)
 
-    #should be called regurarely
     def loop_mqtt(self):
-        self.mqtt_client.my_loop()
-
-
-    '''
-    #for each pair of targets, check if they are close enough to each other that they probably are the same target
-    #should be able to set a threshhold for this value
-    # decide how to compare the different targets to determine if they are the same or not and figure out if this one is better than the single one
-    def compare_new_targets(self):
-        if bool(self.targets) & bool(self.new_targets):
-            for target in self.targets:
-                for new_target in self.new_targets:
-                    x1:float = target.get_x()
-                    x2:float = new_target.get_x()
-                    y1:float = target.get_y()
-                    y2:float = new_target.get_y()
-                    z1:float = target.get_z()
-                    z2:float = new_target.get_z()
-                    #pythagoras to get distance between two points in 3d room
-                    distance = sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2) + (z1-z2)*(z1-z2))
-                    #distance = sqrt((target.get_x-new_target.get_x)*(target.get_x-new_target.get_x) + \
-                    #    (target.get_y-new_target.get_y)*(target.get_y - new_target.get_y) + \
-                    #    (target.get_z-new_target.get_z)*(target.get_z - new_target.get_z))
-                    #if its lower than the threshold, the new_target is not considered "a new target" -> remove it from the new targets list
-                    print(distance)
-                    if distance <= self.threshold:
-                        self.new_targets.remove(new_target)
-
-            while(bool(self.new_targets)):
-                self.targets.append(self.new_targets.pop())    
-
         '''
-
-
-
-#mymqttclient = MqttClient("test.mosquitto.org", 1883, "eazense/eazense_38FDFEB810B6/out")
-#print("Made iot past the creation of the mqttclient")
-#mypresenter = presenter(mymqttclient)
-#counter = 0
-#while(1==1):
-#    if counter == 1000:
-#        mypresenter.loop_mqtt()
-#    counter=counter+1
-#    pass
+        Tells the mqtt client to run its loop.
+        '''
+        self.mqtt_client.my_loop()

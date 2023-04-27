@@ -1,30 +1,53 @@
-#Tanke med detta:
-#Skapa ett interface som heter state
-#Varje state skapar sina egna actions
-#Används i konstruktorn för finite state machinen (fsm.py) för att kontrollera roboten
 class state:
+    '''
+    State, encapsulates a name of a state and keeps track of its status.
+    '''
     def __init__(self, name: str):
+        '''
+        Constructs a new 'state' object.
+
+        :param name: String representation of the state.
+        :return: Returns nothing.
+        '''
         self.active = False
         self.name = name
         pass
 
     def activate(self):
+        '''
+        Function to activate the state.
+
+        :return: Returns nothing.
+        '''
         self.active = True
 
     def deactivate(self):
+        '''
+        Function to deactivate the state.
+
+        :return: Returns nothing.
+        '''
         self.active = False
         
     def get_status(self):
+        '''
+        Function to get the current status of the state.
+
+        :return: Returns True if the state is active and False if not.
+        '''
         return self.active
     
     def get_name(self):
+        '''
+        Function to retreive the name of the state.
+
+        :return: Returns a string representation of the states name.
+        '''
         return self.name
     
-#Alla states ärver från parent-klassen "state"
 class idle(state):
     def __init__(self):
         super().__init__("idle")
-
 
 class recon(state):
     def __init__(self):

@@ -1,5 +1,15 @@
 from math import sqrt, acos, pi
+'''
+File to keep all the public functions of the software system.
+'''
 def extract_angle_and_dist(x, y):
+    '''
+    Function to extract an angle and a distance to a point represented by two values.
+
+    :param x: X coordinate of the point.
+    :param y: Y coordinate of the point.
+    :return: Returns the angle and distance to a point from origo.
+    '''
     if x == 0:
         dist = abs(y)
         if y >= 0:
