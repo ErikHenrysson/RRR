@@ -1,3 +1,5 @@
+# The OS used for this project is: Raspberry Pi OS 32-bit (2023-02-21) 
+
 Dependencies:
 
 1. mosquitto:
