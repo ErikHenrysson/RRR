@@ -39,7 +39,7 @@ class my_figure():
 
         :return: Returns nothing.
         '''
-        pullData = open("fakedata.txt","r").read()
+        pullData = open("radarData.txt","r").read()
         dataList = pullData.split('\n')
         xList = []
         yList = []
