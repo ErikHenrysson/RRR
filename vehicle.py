@@ -1,6 +1,5 @@
 from fsm import *
 from state import *
-from controller import *
 from mqtt_client import *
 from data_manager import *
 

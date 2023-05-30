@@ -9,9 +9,10 @@ import tkinter as tk
 from tkinter import ttk
 import numpy as np
 from math import pi, acos, asin, sqrt
+
+
 LARGE_FONT= ("Verdana", 12)
 style.use("ggplot")
-#TODO städa upp här
 class my_figure():
     '''
     my_figure is a polar-plot figure that can represent the data from the mqtt client.
@@ -30,8 +31,6 @@ class my_figure():
         self.a.grid(True)
         self.a.set_title("Radar data on polar plot", va='bottom')
    
-    #TODO På något sätt måste de gamla målets vinkel och radie sparas för att 
-    # rita pilarna som representerar hastigheten
     def animate(self, i):
         '''
         The animate function extracts all the information from the specified textfile.
@@ -63,7 +62,6 @@ class my_figure():
                 angleList.append(angle-np.deg2rad(45))
                 distList.append(dist)
                 
-        #TODO varför ligger de ett steg bakom? hitta 
 
         dist = np.array(distList)
         angle = np.array(angleList)
@@ -92,6 +90,11 @@ class my_figure():
     def get_f(self):
         return self.f
     
+
+    #TODO move extraction of targets here
+    def extract_targets(self):
+        pass
+
 class gui(tk.Tk):
     '''
     gui is a graphical user interface that holds a my_figure and a button to terminate.
