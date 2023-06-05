@@ -36,17 +36,29 @@ class vehicle(fsm):
 
         :return: Returns nothing.
         '''
-        current_state = self.get_current_state
+        #print("I run i vehicle")
+        current_state = self.get_current_state()
+        #print("current_state innan while:", current_state)
         while(current_state != "terminate"):
+            #print(self.get_current_state())
             current_state = self.get_current_state()
             if current_state == "idle":
                 pass
             elif current_state == "recon":
+                #print("recon")
                 self.save_data()
                 self.gui.update()   
             elif current_state == "mobile":
                 pass
+
+    def get_current_state(self):
+        current_state = super().get_current_state()
+        #print("before super in vehicle:", current_state)
+        return current_state
     
+    def change_state(self, new_state: str):
+        return super().change_state(new_state=new_state)
+
     def save_data(self):
         '''
         Function to call the data manegers loop.
